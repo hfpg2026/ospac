@@ -1,0 +1,33 @@
+license:
+  id: Apache-2.0
+  name: "Apache License 2.0"
+  type: permissive
+  spdx_id: Apache-2.0
+
+  properties:
+    commercial_use: true
+    distribution: true
+    modification: true
+    patent_grant: true
+    private_use: true
+
+  requirements:
+    include_license: true
+    include_copyright: true
+    include_notice: true
+    state_changes: true
+
+  compatibility:
+    static_linking:
+      compatible_with:
+        - category: permissive
+        - MIT
+        - BSD-3-Clause
+        - Apache-2.0
+      incompatible_with:
+        - GPL-2.0
+        - GPL-3.0
+
+    dynamic_linking:
+      compatible_with:
+        - category: any

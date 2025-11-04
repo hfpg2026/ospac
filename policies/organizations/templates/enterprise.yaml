@@ -1,0 +1,58 @@
+version: "2.0"
+name: "Enterprise Policy Template"
+description: "Default policy for enterprise organizations"
+
+rules:
+  - id: no_copyleft_in_products
+    description: "Prevent strong copyleft in distributed products"
+    priority: 10
+    when:
+      distribution_type: ["commercial", "embedded"]
+      license_category: copyleft_strong
+    then:
+      action: deny
+      severity: error
+      message: "Strong copyleft licenses not allowed in commercial products"
+      remediation: "Replace with permissive alternative or seek legal review"
+
+  - id: legal_review_weak_copyleft
+    description: "Flag weak copyleft for legal review"
+    priority: 5
+    when:
+      license_category: copyleft_weak
+    then:
+      action: flag_for_review
+      severity: warning
+      message: "Weak copyleft license requires legal review"
+      notify: ["legal@company.com"]
+
+  - id: approve_permissive
+    description: "Automatically approve permissive licenses"
+    priority: 1
+    when:
+      license_type: permissive
+    then:
+      action: approve
+      severity: info
+      message: "Permissive license automatically approved"
+
+decision_tree:
+  - if:
+      license_type: permissive
+    then:
+      action: approve
+      automatic: true
+      note: "Permissive licenses pre-approved"
+
+  - if:
+      license: GPL-3.0
+      usage: development_only
+    then:
+      action: approve
+      note: "GPL allowed for development tools only"
+
+  - if:
+      license_type: proprietary
+    then:
+      action: deny
+      reason: "No closed source dependencies allowed"

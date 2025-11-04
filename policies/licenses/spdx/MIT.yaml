@@ -1,0 +1,23 @@
+license:
+  id: MIT
+  name: "MIT License"
+  type: permissive
+  spdx_id: MIT
+
+  properties:
+    commercial_use: true
+    distribution: true
+    modification: true
+    private_use: true
+
+  requirements:
+    include_license: true
+    include_copyright: true
+
+  compatibility:
+    static_linking:
+      compatible_with:
+        - category: any
+    dynamic_linking:
+      compatible_with:
+        - category: any

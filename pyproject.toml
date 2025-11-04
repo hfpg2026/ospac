@@ -1,0 +1,140 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ospac"
+version = "0.1.0"
+description = "Open Source Policy as Code - License compliance policy engine"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Oscar Valenzuela B.", email = "oscar.valenzuela.b@gmail.com"}
+]
+maintainers = [
+    {name = "Oscar Valenzuela B.", email = "oscar.valenzuela.b@gmail.com"}
+]
+keywords = [
+    "license",
+    "compliance",
+    "policy",
+    "policy-as-code",
+    "oss",
+    "open-source",
+    "spdx",
+    "license-compatibility",
+    "regulatory-compliance",
+    "sbom"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Legal Industry",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: System :: Software Distribution",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pyyaml>=6.0",
+    "click>=8.0.0",
+    "jsonschema>=4.17.0",
+    "jinja2>=3.0.0",
+    "colorama>=0.4.0",
+    "requests>=2.28.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "isort>=5.12.0",
+    "pre-commit>=3.0.0",
+]
+semcl = [
+    "osslili>=1.5.0",  # For license detection
+    "upmex>=1.6.0",    # For package metadata extraction
+]
+llm = [
+    "strandsagents>=0.1.0",  # For LLM-based analysis with Ollama
+]
+all = [
+    "ospac[semcl,llm]",
+]
+
+[project.urls]
+Homepage = "https://github.com/SemClone/osslili"
+Documentation = "https://github.com/SemClone/osslili#readme"
+Repository = "https://github.com/SemClone/osslili.git"
+Issues = "https://github.com/SemClone/osslili/issues"
+Changelog = "https://github.com/SemClone/osslili/blob/main/CHANGELOG.md"
+
+[project.scripts]
+ospac = "ospac.cli.commands:main"
+
+[tool.setuptools]
+packages = ["ospac",
+           "ospac.runtime",
+           "ospac.models",
+           "ospac.cli",
+           "ospac.pipeline",
+           "ospac.utils"]
+
+[tool.setuptools.package-data]
+ospac = ["data/*.json", "data/*.yaml", "policies/**/*.yaml"]
+"ospac.data" = ["*.json", "*.yaml", "*.txt"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+skip_gitignore = true
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+addopts = "-v --cov=osslili --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["osslili"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]

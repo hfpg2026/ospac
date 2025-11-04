@@ -1,0 +1,35 @@
+license:
+  id: GPL-3.0
+  name: "GNU General Public License v3.0"
+  type: copyleft_strong
+  spdx_id: GPL-3.0
+
+  properties:
+    commercial_use: true
+    distribution: true
+    modification: true
+    patent_grant: true
+    private_use: true
+
+  requirements:
+    disclose_source: true
+    include_license: true
+    include_copyright: true
+    state_changes: true
+    same_license: true  # Copyleft
+
+  compatibility:
+    static_linking:
+      compatible_with:
+        - GPL-3.0
+        - GPL-3.0-or-later
+        - AGPL-3.0
+      incompatible_with:
+        - category: permissive
+        - category: proprietary
+
+    dynamic_linking:
+      compatible_with:
+        - category: any
+      requires_review:
+        - category: proprietary

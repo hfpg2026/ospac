@@ -1,0 +1,36 @@
+version: "1.0"
+name: "Linking Compatibility Rules"
+
+rules:
+  - id: copyleft_contamination
+    description: "Strong copyleft licenses affect statically linked code"
+    when:
+      license_type: copyleft_strong
+      link_type: static
+    then:
+      action: contaminate
+      severity: error
+      message: "Static linking with {license} requires entire work to be {license}"
+      requirements:
+        - "Entire work must be licensed under same copyleft license"
+        - "Source code must be disclosed"
+
+  - id: lgpl_dynamic_allowed
+    description: "LGPL allows dynamic linking without contamination"
+    when:
+      license: LGPL-*
+      link_type: dynamic
+    then:
+      action: allow
+      requirements:
+        - "Must allow relinking with modified LGPL library"
+        - "Cannot statically link LGPL code"
+
+  - id: permissive_always_compatible
+    description: "Permissive licenses are generally compatible"
+    when:
+      license_type: permissive
+    then:
+      action: allow
+      severity: info
+      message: "Permissive license {license} allows flexible usage"
