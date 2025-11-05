@@ -167,3 +167,12 @@ test-packages/
 # Project tracking (private)
 NOTES.md
 notes.md
+
+# Development/utility scripts
+fix_missing_licenses.py
+monitor_progress.py
+split_compatibility_matrix.py
+test_policy.yaml
+*_test.py
+*_dev.py
+scripts/dev/
