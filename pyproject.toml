@@ -88,13 +88,24 @@ Changelog = "https://github.com/SemClone/osslili/blob/main/CHANGELOG.md"
 [project.scripts]
 ospac = "ospac.cli.commands:main"
 
+[tool.setuptools]
+include-package-data = true
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["ospac*"]
 
 [tool.setuptools.package-data]
-ospac = ["data/*.json", "data/*.yaml", "policies/**/*.yaml"]
-"ospac.data" = ["*.json", "*.yaml", "*.txt"]
+ospac = [
+    "data/**/*.json",
+    "data/**/*.yaml",
+    "data/**/*.yml",
+    "data/**/*.txt",
+    "data/licenses/**/*",
+    "data/compatibility/**/*",
+    "data/obligations/**/*",
+    "policies/**/*.yaml",
+]
 
 [tool.black]
 line-length = 100
