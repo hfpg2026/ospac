@@ -19,7 +19,7 @@ class PolicyRuntime:
     All logic is driven by policy files, not hardcoded.
     """
 
-    def __init__(self, policy_path: Optional[str] = None):
+    def __init__(self, policy_path: Optional[str] = None, skip_default: bool = False):
         """Initialize the policy runtime with policy definitions."""
         self.policies = {}
         self.evaluator = None
@@ -27,7 +27,7 @@ class PolicyRuntime:
 
         if policy_path:
             self.load_policies(policy_path)
-        else:
+        elif not skip_default:
             self._load_default_policy()
 
     def load_policies(self, policy_path: str) -> None:
@@ -116,10 +116,23 @@ class PolicyRuntime:
             if key == "license":
                 # Check if any of the licenses in context match
                 licenses_to_check = []
+
+                # Support different ways licenses might be specified
                 if "licenses" in context:
                     licenses_to_check.extend(context["licenses"])
                 if "licenses_found" in context:
                     licenses_to_check.extend(context["licenses_found"])
+                if "license" in context:
+                    # Also support single license field for compatibility
+                    single_license = context["license"]
+                    if isinstance(single_license, str):
+                        licenses_to_check.append(single_license)
+                    elif isinstance(single_license, list):
+                        licenses_to_check.extend(single_license)
+
+                # If no licenses found in any expected field, no match
+                if not licenses_to_check:
+                    return False
 
                 if isinstance(value, list):
                     # Check if any license in context matches any in the rule
