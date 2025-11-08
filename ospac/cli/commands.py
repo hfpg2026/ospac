@@ -401,25 +401,35 @@ def show(license_id: str, format: str):
     """Show details for a specific license from SPDX data."""
     import yaml
     try:
-        # Load from SPDX YAML file
-        spdx_file = Path("data") / "licenses" / "spdx" / f"{license_id}.yaml"
+        # Use package data directory
+        data_dir = Path(__file__).parent.parent / "data"
 
-        if not spdx_file.exists():
-            click.secho(f"License {license_id} not found", fg="red")
+        # Load from JSON file (preferred format)
+        json_file = data_dir / "licenses" / "json" / f"{license_id}.json"
 
-            # Show available licenses
-            spdx_dir = Path("data") / "licenses" / "spdx"
-            if spdx_dir.exists():
-                available = [f.stem for f in spdx_dir.glob("*.yaml")][:10]
-                click.echo("\nAvailable licenses (first 10):")
-                for lid in available:
-                    click.echo(f"  - {lid}")
-            sys.exit(1)
+        if json_file.exists():
+            with open(json_file) as f:
+                data = json.load(f)
+            license_data = data.get("license", {})
+        else:
+            # Fallback to YAML file
+            yaml_file = data_dir / "licenses" / "spdx" / f"{license_id}.yaml"
 
-        with open(spdx_file) as f:
-            data = yaml.safe_load(f)
+            if not yaml_file.exists():
+                click.secho(f"License {license_id} not found", fg="red")
 
-        license_data = data.get("license", {})
+                # Show available licenses
+                json_dir = data_dir / "licenses" / "json"
+                if json_dir.exists():
+                    available = [f.stem for f in json_dir.glob("*.json")][:10]
+                    click.echo("\nAvailable licenses (first 10):")
+                    for lid in available:
+                        click.echo(f"  - {lid}")
+                sys.exit(1)
+
+            with open(yaml_file) as f:
+                data = yaml.safe_load(f)
+            license_data = data.get("license", {})
 
         if format == "json":
             click.echo(json.dumps(license_data, indent=2))
