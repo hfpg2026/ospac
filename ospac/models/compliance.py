@@ -37,6 +37,7 @@ class PolicyResult:
     message: Optional[str] = None
     requirements: List[str] = field(default_factory=list)
     remediation: Optional[str] = None
+    remediations_all: List[str] = field(default_factory=list)
 
     @classmethod
     def aggregate(cls, results: List["PolicyResult"]) -> "PolicyResult":
@@ -63,6 +64,10 @@ class PolicyResult:
         }
 
         most_restrictive = max(results, key=lambda r: action_priority.get(r.action, 0))
+        results_priority_ordered = sorted(
+            results, key=lambda r: action_priority.get(r.action, 0), reverse=True
+        )
+        remediations_ordered = [r.remediation for r in results_priority_ordered if r.remediation]
 
         # Combine all requirements
         all_requirements = []
@@ -76,6 +81,7 @@ class PolicyResult:
             message=f"Evaluated {len(results)} rules",
             requirements=list(set(all_requirements)),
             remediation=most_restrictive.remediation,
+            remediations_all=remediations_ordered,
         )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -114,21 +120,25 @@ class ComplianceResult:
 
     def add_violation(self, rule_id: str, message: str, severity: str = "error") -> None:
         """Add a violation to the result."""
-        self.violations.append({
-            "rule_id": rule_id,
-            "message": message,
-            "severity": severity,
-        })
+        self.violations.append(
+            {
+                "rule_id": rule_id,
+                "message": message,
+                "severity": severity,
+            }
+        )
         if self.status != ComplianceStatus.NON_COMPLIANT:
             self.status = ComplianceStatus.NON_COMPLIANT
 
     def add_warning(self, rule_id: str, message: str) -> None:
         """Add a warning to the result."""
-        self.warnings.append({
-            "rule_id": rule_id,
-            "message": message,
-            "severity": "warning",
-        })
+        self.warnings.append(
+            {
+                "rule_id": rule_id,
+                "message": message,
+                "severity": "warning",
+            }
+        )
         if self.status == ComplianceStatus.COMPLIANT:
             self.status = ComplianceStatus.WARNING
 
@@ -140,7 +150,9 @@ class ComplianceResult:
         if policy_result.action == ActionType.DENY:
             result.status = ComplianceStatus.NON_COMPLIANT
             if policy_result.message:
-                result.add_violation(policy_result.rule_id, policy_result.message, policy_result.severity)
+                result.add_violation(
+                    policy_result.rule_id, policy_result.message, policy_result.severity
+                )
 
         elif policy_result.action == ActionType.FLAG_FOR_REVIEW:
             result.status = ComplianceStatus.REQUIRES_REVIEW
